@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package messages;
+
+message Header
+{
+    uint32 type = 1;
+    uint32 length = 2;
+}
