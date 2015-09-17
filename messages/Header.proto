@@ -4,6 +4,6 @@ package messages;
 
 message Header
 {
-    uint32 type = 1;
-    uint32 length = 2;
+    fixed32 type = 1;
+    fixed32 length = 2;
 }

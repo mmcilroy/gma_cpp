@@ -96,13 +96,13 @@ class Header : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // optional uint32 type = 1;
+  // optional fixed32 type = 1;
   void clear_type();
   static const int kTypeFieldNumber = 1;
   ::google::protobuf::uint32 type() const;
   void set_type(::google::protobuf::uint32 value);
 
-  // optional uint32 length = 2;
+  // optional fixed32 length = 2;
   void clear_length();
   static const int kLengthFieldNumber = 2;
   ::google::protobuf::uint32 length() const;
@@ -131,7 +131,7 @@ class Header : public ::google::protobuf::Message {
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // Header
 
-// optional uint32 type = 1;
+// optional fixed32 type = 1;
 inline void Header::clear_type() {
   type_ = 0u;
 }
@@ -145,7 +145,7 @@ inline void Header::set_type(::google::protobuf::uint32 value) {
   // @@protoc_insertion_point(field_set:messages.Header.type)
 }
 
-// optional uint32 length = 2;
+// optional fixed32 length = 2;
 inline void Header::clear_length() {
   length_ = 0u;
 }

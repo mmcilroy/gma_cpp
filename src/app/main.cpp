@@ -5,16 +5,16 @@
 class gma_application : public eva::application
 {
 public:
-    void process( const messages::FIXMessage& ) override;
+    void process( const messages::FIXMessage&, bool ) override;
 
-    void process( const messages::XTExecution& ) override;
+    void process( const messages::XTExecution&, bool ) override;
 
 protected:
-    void process_new( const fix::message& );
+    void process_new( const fix::message&, bool );
 
-    void process_replace( const fix::message& );
+    void process_replace( const fix::message&, bool );
 
-    void process_cancel( const fix::message& );
+    void process_cancel( const fix::message&, bool );
 
     std::string cache_get( const std::string& ) const;
 
@@ -25,16 +25,15 @@ private:
 };
 
 
-
-void gma_application::process( const messages::FIXMessage& msg )
+inline void gma_application::process( const messages::FIXMessage& msg, bool recovery )
 {
     fix::message fix_msg( msg.message() );
     if( fix_msg.get( 35 ) == "D" ) {
-        process_new( fix_msg );
+        process_new( fix_msg, recovery );
     }
 }
 
-void gma_application::process_new( const fix::message& fix_msg )
+inline void gma_application::process_new( const fix::message& fix_msg, bool recovery )
 {
     // get the xt and fix ids
     std::string xt_id = "67890";
@@ -47,45 +46,51 @@ void gma_application::process_new( const fix::message& fix_msg )
     // remember the session we received the fix message from
     cache_set( "reply." + xt_id, fix_msg.get( 49 ) );
 
-    // build the xt message
-    messages::XTNewOrder xt_new;
-    xt_new.set_clordid( xt_id );
-    xt_new.set_symbol( fix_msg.get( 55 ) );
-    xt_new.set_side( fix_msg.get( 54 ) );
-    xt_new.set_ord_type( fix_msg.get( 40 ) );
-    xt_new.set_quantity( fix_msg.get< int >( 38 ) );
-    if( xt_new.ord_type() == "1" ) {
-        xt_new.set_price( fix_msg.get< int >( 44 ) );
+    if( !recovery )
+    {
+        // build the xt message
+        messages::XTNewOrder xt_new;
+        xt_new.set_clordid( xt_id );
+        xt_new.set_symbol( fix_msg.get( 55 ) );
+        xt_new.set_side( fix_msg.get( 54 ) );
+        xt_new.set_ord_type( fix_msg.get( 40 ) );
+        xt_new.set_quantity( fix_msg.get< int >( 38 ) );
+        if( xt_new.ord_type() == "1" ) {
+            xt_new.set_price( fix_msg.get< int >( 44 ) );
+        }
+
+        std::cout << xt_new.DebugString() << std::endl;
     }
-
-    std::cout << xt_new.DebugString() << std::endl;
 }
 
-void gma_application::process( const messages::XTExecution& xt_msg )
+inline void gma_application::process( const messages::XTExecution& xt_msg, bool recovery )
 {
-    // get the fix id
-    std::string xt_id = xt_msg.clordid();
-    std::string fix_id = cache_get( "id.fix." + xt_id );
+    if( !recovery )
+    {
+        // get the fix id
+        std::string xt_id = xt_msg.clordid();
+        std::string fix_id = cache_get( "id.fix." + xt_id );
 
-    // build and send reply
-    fix::message fix_msg;
-    fix_msg.set( 35, "D" );
-    fix_msg.set( 11, fix_id );
-    fix_msg.set( 55, xt_msg.symbol() );
-    fix_msg.set( 40, xt_msg.ord_type() );
-    fix_msg.set( 38, xt_msg.quantity() );
-    fix_msg.set( 44, xt_msg.ord_type() );
+        // build and send reply
+        fix::message fix_msg;
+        fix_msg.set( 35, "D" );
+        fix_msg.set( 11, fix_id );
+        fix_msg.set( 55, xt_msg.symbol() );
+        fix_msg.set( 40, xt_msg.ord_type() );
+        fix_msg.set( 38, xt_msg.quantity() );
+        fix_msg.set( 44, xt_msg.ord_type() );
 
-    std::cout << fix_msg << std::endl;
+        std::cout << fix_msg << std::endl;
+    }
 }
 
-std::string gma_application::cache_get( const std::string& k ) const
+inline std::string gma_application::cache_get( const std::string& k ) const
 {
     std::cout << "cache_get: " << k << std::endl;
     return data_.at( k );
 }
 
-void gma_application::cache_set( const std::string& k, const std::string& v )
+inline void gma_application::cache_set( const std::string& k, const std::string& v )
 {
     std::cout << "cache_set: " << k << "=" << v << std::endl;
     data_[ k ] = v;
@@ -105,7 +110,7 @@ int main()
     xt_exec.set_price( 1 );
 
     gma_application app;
-    app.inject( fix_msg );
-    app.inject( xt_exec );
+    //app.inject( fix_msg );
+    //app.inject( xt_exec );
     app.join();
 }

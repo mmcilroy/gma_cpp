@@ -80,7 +80,7 @@ void protobuf_AddDesc_Header_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\014Header.proto\022\010messages\"&\n\006Header\022\014\n\004ty"
-    "pe\030\001 \001(\r\022\016\n\006length\030\002 \001(\rb\006proto3", 72);
+    "pe\030\001 \001(\007\022\016\n\006length\030\002 \001(\007b\006proto3", 72);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Header.proto", &protobuf_RegisterTypes);
   Header::default_instance_ = new Header();
@@ -198,26 +198,26 @@ bool Header::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional uint32 type = 1;
+      // optional fixed32 type = 1;
       case 1: {
-        if (tag == 8) {
+        if (tag == 13) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
                  input, &type_)));
 
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_length;
+        if (input->ExpectTag(21)) goto parse_length;
         break;
       }
 
-      // optional uint32 length = 2;
+      // optional fixed32 length = 2;
       case 2: {
-        if (tag == 16) {
+        if (tag == 21) {
          parse_length:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
                  input, &length_)));
 
         } else {
@@ -251,14 +251,14 @@ failure:
 void Header::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:messages.Header)
-  // optional uint32 type = 1;
+  // optional fixed32 type = 1;
   if (this->type() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->type(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFixed32(1, this->type(), output);
   }
 
-  // optional uint32 length = 2;
+  // optional fixed32 length = 2;
   if (this->length() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->length(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFixed32(2, this->length(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:messages.Header)
@@ -267,14 +267,14 @@ void Header::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Header::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:messages.Header)
-  // optional uint32 type = 1;
+  // optional fixed32 type = 1;
   if (this->type() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->type(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFixed32ToArray(1, this->type(), target);
   }
 
-  // optional uint32 length = 2;
+  // optional fixed32 length = 2;
   if (this->length() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->length(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteFixed32ToArray(2, this->length(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:messages.Header)
@@ -284,18 +284,14 @@ void Header::SerializeWithCachedSizes(
 int Header::ByteSize() const {
   int total_size = 0;
 
-  // optional uint32 type = 1;
+  // optional fixed32 type = 1;
   if (this->type() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
-        this->type());
+    total_size += 1 + 4;
   }
 
-  // optional uint32 length = 2;
+  // optional fixed32 length = 2;
   if (this->length() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
-        this->length());
+    total_size += 1 + 4;
   }
 
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
@@ -365,7 +361,7 @@ void Header::InternalSwap(Header* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // Header
 
-// optional uint32 type = 1;
+// optional fixed32 type = 1;
 void Header::clear_type() {
   type_ = 0u;
 }
@@ -379,7 +375,7 @@ void Header::clear_type() {
   // @@protoc_insertion_point(field_set:messages.Header.type)
 }
 
-// optional uint32 length = 2;
+// optional fixed32 length = 2;
 void Header::clear_length() {
   length_ = 0u;
 }

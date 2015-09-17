@@ -9,7 +9,7 @@
 
 namespace eva {
 
-constexpr size_t EVENT_HEADER_SIZE = 4;
+constexpr size_t EVENT_HEADER_SIZE = 10;
 constexpr size_t EVENT_BUFFER_SIZE = 256;
 
 class event
@@ -18,6 +18,10 @@ public:
     eva::event_type type() const;
 
     size_t length() const;
+
+    char* get_header_buffer() const;
+
+    char* get_payload_buffer() const;
 
     template< typename T, typename F >
     void parse( F ) const;
@@ -48,45 +52,55 @@ private:
 
 
 
-eva::event_type eva::event::type() const
+inline eva::event_type eva::event::type() const
 {
     messages::Header hdr;
     hdr.ParseFromArray( buffer_, EVENT_HEADER_SIZE );
     return (eva::event_type)hdr.type();
 }
 
-size_t eva::event::length() const
+inline size_t eva::event::length() const
 {
     messages::Header hdr;
     hdr.ParseFromArray( buffer_, EVENT_HEADER_SIZE );
     return hdr.length();
 }
 
+inline char* eva::event::get_header_buffer() const
+{
+    return (char*)buffer_;
+}
+
+inline char* eva::event::get_payload_buffer() const
+{
+    return (char*)buffer_ + EVENT_HEADER_SIZE;
+}
+
 template< typename T, typename F >
-void eva::event::parse( F handler ) const
+inline void eva::event::parse( F handler ) const
 {
     T msg;
     parse( msg );
     handler( msg );
 }
 
-void eva::event::parse( messages::FIXMessage& msg ) const
+inline void eva::event::parse( messages::FIXMessage& msg ) const
 {
     parse( eva::event_type::FIX_MESSAGE, msg );
 }
 
-void eva::event::parse( messages::XTNewOrder& msg ) const
+inline void eva::event::parse( messages::XTNewOrder& msg ) const
 {
     parse( eva::event_type::XT_NEW_ORDER, msg );
 }
 
-void eva::event::parse( messages::XTExecution& msg ) const
+inline void eva::event::parse( messages::XTExecution& msg ) const
 {
     parse( eva::event_type::XT_EXECUTION, msg );
 }
 
 template< typename T >
-void eva::event::parse( eva::event_type type, T& msg ) const
+inline void eva::event::parse( eva::event_type type, T& msg ) const
 {
     messages::Header hdr;
     hdr.ParseFromArray( buffer_, EVENT_HEADER_SIZE );
@@ -97,23 +111,23 @@ void eva::event::parse( eva::event_type type, T& msg ) const
     }
 }
 
-void eva::event::serialize( const messages::FIXMessage& msg )
+inline void eva::event::serialize( const messages::FIXMessage& msg )
 {
     serialize( eva::event_type::FIX_MESSAGE, msg );
 }
 
-void eva::event::serialize( const messages::XTNewOrder& msg )
+inline void eva::event::serialize( const messages::XTNewOrder& msg )
 {
     serialize( eva::event_type::XT_NEW_ORDER, msg );
 }
 
-void eva::event::serialize( const messages::XTExecution& msg )
+inline void eva::event::serialize( const messages::XTExecution& msg )
 {
     serialize( eva::event_type::XT_EXECUTION, msg );
 }
 
 template< typename T >
-void eva::event::serialize( eva::event_type type, const T& msg )
+inline void eva::event::serialize( eva::event_type type, const T& msg )
 {
     messages::Header hdr;
     hdr.set_type( type );

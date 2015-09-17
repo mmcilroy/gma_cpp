@@ -1,5 +1,6 @@
 
 #include "eva/event.hpp"
+#include "eva/journal.hpp"
 #include "pulsar/publisher.hpp"
 
 namespace eva {
@@ -18,18 +19,22 @@ public:
     void join();
 
 protected:
-    virtual void process( const messages::FIXMessage& ) {}
+    virtual void process( const messages::FIXMessage&, bool ) {}
 
-    virtual void process( const messages::XTNewOrder& ) {}
+    virtual void process( const messages::XTNewOrder&, bool ) {}
 
-    virtual void process( const messages::XTExecution& ) {}
+    virtual void process( const messages::XTExecution&, bool ) {}
+
+    void jnl_thr_fn();
 
     void biz_thr_fn();
 
 private:
     event_publisher pub_;
+    event_subscriber& jnl_sub_;
     event_subscriber& biz_sub_;
 
+    std::thread jnl_thr_;
     std::thread biz_thr_;
 };
 
@@ -39,9 +44,36 @@ private:
 
 inline eva::application::application() :
     pub_( 8 ),
-    biz_sub_( pub_.subscribe() ),
+    jnl_sub_( pub_.subscribe() ),
+    biz_sub_( jnl_sub_.subscribe() ),
+    jnl_thr_( &application::jnl_thr_fn, this ),
     biz_thr_( &application::biz_thr_fn, this )
 {
+    eva::journal jnl( "journal", false );
+    jnl.recover( [ & ]( const eva::event& ev )
+    {
+        eva::event_type type = ev.type();
+        if( type == eva::event_type::FIX_MESSAGE )
+        {
+            ev.parse< messages::FIXMessage >( [ & ]( const messages::FIXMessage& msg ) {
+                process( msg, true );
+            } );
+        }
+        else
+        if( type == eva::event_type::XT_NEW_ORDER )
+        {
+            ev.parse< messages::XTNewOrder >( [ & ]( const messages::XTNewOrder& msg ) {
+                process( msg, true );
+            } );
+        }
+        else
+        if( type == eva::event_type::XT_EXECUTION )
+        {
+            ev.parse< messages::XTExecution >( [ & ]( const messages::XTExecution& msg ) {
+                process( msg, true );
+            } );
+        }
+    } );
 }
 
 template< typename T >
@@ -57,28 +89,41 @@ inline void eva::application::join()
     biz_thr_.join();
 }
 
+inline void eva::application::jnl_thr_fn()
+{
+    eva::journal jnl( "journal", false );
+    jnl_sub_.dispatch( [&]( const eva::event& ev, size_t rem )
+    {
+        jnl.write( ev );
+        jnl.flush();
+
+        return false;
+    } );
+}
+
 inline void eva::application::biz_thr_fn()
 {
     biz_sub_.dispatch( [&]( const eva::event& ev, size_t rem )
     {
-        if( ev.type() == eva::event_type::FIX_MESSAGE )
+        eva::event_type type = ev.type();
+        if( type == eva::event_type::FIX_MESSAGE )
         {
             ev.parse< messages::FIXMessage >( [ & ]( const messages::FIXMessage& msg ) {
-                process( msg );
+                process( msg, false );
             } );
         }
         else
-        if( ev.type() == eva::event_type::XT_NEW_ORDER )
+        if( type == eva::event_type::XT_NEW_ORDER )
         {
             ev.parse< messages::XTNewOrder >( [ & ]( const messages::XTNewOrder& msg ) {
-                process( msg );
+                process( msg, false );
             } );
         }
         else
-        if( ev.type() == eva::event_type::XT_EXECUTION )
+        if( type == eva::event_type::XT_EXECUTION )
         {
             ev.parse< messages::XTExecution >( [ & ]( const messages::XTExecution& msg ) {
-                process( msg );
+                process( msg, false );
             } );
         }
 

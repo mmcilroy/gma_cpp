@@ -18,6 +18,11 @@ protected:
 
 int main()
 {
+    messages::Header hdr;
+    hdr.set_type( 10000 );
+    hdr.set_length( 2 );
+    std::cout << hdr.ByteSize() << std::endl;
+
     messages::XTNewOrder xt_new;
     xt_new.set_symbol( "VOD.L" );
     xt_new.set_side( "1" );
