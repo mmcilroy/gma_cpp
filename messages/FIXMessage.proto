@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package messages;
-
-message FIXMessage
-{
-    string message = 1;
-}

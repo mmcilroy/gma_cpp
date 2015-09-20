@@ -1,38 +1,25 @@
-
-#include <iostream>
 #include "eva/application.hpp"
+#include <iostream>
 
-class my_application : public eva::application
+class my_app : public eva::application
 {
 protected:
-    virtual void process( const messages::FIXMessage& msg )
-    {
-        std::cout << msg.DebugString() << std::endl;
-    }
+    void process( const eva::place_order& po, bool rec ) override {
+        std::cout << po << std::endl;
+    };
 
-    virtual void process( const messages::XTNewOrder& msg )
-    {
-        std::cout << msg.DebugString() << std::endl;
-    }
+    void process( const eva::order_executed& oe, bool rec ) override {
+        std::cout << oe << std::endl;
+    };
 };
 
 int main()
 {
-    messages::Header hdr;
-    hdr.set_type( 10000 );
-    hdr.set_length( 2 );
-    std::cout << hdr.ByteSize() << std::endl;
+    eva::place_order po;
+    po.clordid( "12345" );
+    po.appendage( 58, "hi" );
 
-    messages::XTNewOrder xt_new;
-    xt_new.set_symbol( "VOD.L" );
-    xt_new.set_side( "1" );
-    xt_new.set_quantity( 100 );
-
-    messages::FIXMessage fix_msg;
-    fix_msg.set_message( "hi" );
-
-    my_application app;
-    app.inject( fix_msg );
-    app.inject( xt_new );
+    my_app app;
+    app.inject( po );
     app.join();
 }

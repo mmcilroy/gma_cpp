@@ -10,5 +10,5 @@ endif()
 
 set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -Wl,--no-as-needed -g" )
 
-include_directories( include include/messages /home/mmcilroy/pubsub_cpp/include /home/mmcilroy/Selene/include /usr/include/lua5.2 )
+include_directories( include include/eva/pb /usr/include/lua5.2 )
 add_subdirectory( src )
