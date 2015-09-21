@@ -4,27 +4,29 @@ header = {
 }
 
 place_order = {
-    { id=1, name='clordid', type='string' },
-    { id=2, name='symbol', type='string' },
-    { id=3, name='side', type='string' },
-    { id=4, name='ord_type', type='string' },
-    { id=5, name='quantity', type='uint32' },
-    { id=6, name='price', type='uint32' },
-    { id=7, name='appendage', type='map<uint32,string>' }
+    { id=1, name='user', type='string' },
+    { id=2, name='clordid', type='string' },
+    { id=3, name='symbol', type='string' },
+    { id=4, name='side', type='string' },
+    { id=5, name='ord_type', type='string' },
+    { id=6, name='quantity', type='uint32' },
+    { id=7, name='price', type='uint32' },
+    { id=8, name='appendage', type='map<uint32,string>' }
 }
 
 order_executed = {
-    { id=1, name='clordid', type='string' },
-    { id=2, name='symbol', type='string' },
-    { id=3, name='side', type='string' },
-    { id=4, name='ord_type', type='string' },
-    { id=5, name='quantity', type='uint32' },
-    { id=6, name='price', type='uint32' },
-    { id=7, name='ord_status', type='string' },
-    { id=8, name='exec_type', type='string' },
-    { id=9, name='last_qty', type='uint32' },
-    { id=10, name='last_price', type='uint32' },
-    { id=11, name='appendage', type='map<uint32,string>' }
+    { id=1, name='user', type='string' },
+    { id=2, name='clordid', type='string' },
+    { id=3, name='symbol', type='string' },
+    { id=4, name='side', type='string' },
+    { id=5, name='ord_type', type='string' },
+    { id=6, name='quantity', type='uint32' },
+    { id=7, name='price', type='uint32' },
+    { id=8, name='ord_status', type='string' },
+    { id=9, name='exec_type', type='string' },
+    { id=10, name='last_qty', type='uint32' },
+    { id=11, name='last_price', type='uint32' },
+    { id=12, name='appendage', type='map<uint32,string>' }
 }
 
 header_def = {

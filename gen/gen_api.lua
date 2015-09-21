@@ -37,7 +37,8 @@ function gen_eva_class( msg )
     for k, v in pairs( _G[msg['eva']] ) do
     if string.find( v['type'], "^map.*" ) then
     io.write( '    void ' .. v['name'] .. '( uint32_t, std::string );\n\n' )
-    io.write( '    std::string ' .. v['name'] .. '( uint32_t );\n\n' )
+    io.write( '    std::string ' .. v['name'] .. '( uint32_t ) const;\n\n' )
+    io.write( '    const ::google::protobuf::Map< ::google::protobuf::uint32, ::std::string >& ' .. v['name'] .. '() const;\n\n' )
     else
     io.write( '    void ' .. v['name'] .. '( ' .. gen_type( v['type'] ) .. ' );\n\n' )
     io.write( '    ' .. gen_type( v['type'] ) .. ' ' .. v['name'] .. '() const;\n\n' )
@@ -72,9 +73,14 @@ function gen_eva_class( msg )
     io.write( '    (*pb_.mutable_' .. v['name'] .. '())[ k ] = v;\n' )
     io.write( '}\n\n' )
 
-    io.write( 'inline std::string ' .. msg['eva'] .. '::' .. v['name'] .. '( uint32_t k )\n' )
+    io.write( 'inline std::string ' .. msg['eva'] .. '::' .. v['name'] .. '( uint32_t k ) const\n' )
     io.write( '{\n' )
-    io.write( '    return (*pb_.mutable_' .. v['name'] .. '())[ k ];\n' )
+    io.write( '    return pb_.' .. v['name'] .. '().at( k );\n' )
+    io.write( '}\n\n' )
+
+    io.write( 'inline const ::google::protobuf::Map< ::google::protobuf::uint32, ::std::string >& ' .. msg['eva'] .. '::' .. v['name'] .. '() const\n' )
+    io.write( '{\n' )
+    io.write( '    return pb_.' .. v['name'] .. '();\n' )
     io.write( '}\n\n' )
 
     else
@@ -113,7 +119,7 @@ function gen_eva_event( msgs )
 
     io.write( '#pragma once\n\n' )
     io.write( '#include "header.hpp"\n' )
-    io.write( '#include "pulsar/publisher.hpp"\n' )
+    io.write( '#include "pubsub/publisher.hpp"\n' )
     for k,v in pairs( msgs ) do
     io.write( '#include "' .. v['eva'] .. '.hpp"\n' )
     end
@@ -159,8 +165,8 @@ function gen_eva_event( msgs )
 
     io.write( '};\n\n' )
 
-    io.write( 'typedef pulsar::publisher< event, pulsar::blocking_sequence > event_publisher;\n' )
-    io.write( 'typedef pulsar::subscriber< event, pulsar::blocking_sequence > event_subscriber;\n\n' )
+    io.write( 'typedef pubsub::publisher< event, pubsub::blocking_sequence > event_publisher;\n' )
+    io.write( 'typedef pubsub::subscriber< event, pubsub::blocking_sequence > event_subscriber;\n\n' )
 
     io.write( '#include "event.inl"\n\n' )
     io.write( '}\n\n' )
