@@ -7,6 +7,7 @@ gen_eva_class( header_def )
 for k,v in pairs( message_def ) do
     gen_proto( v )
     gen_eva_class( v )
+    gen_eva_lua( v )
 end
 
 gen_eva_event( message_def )

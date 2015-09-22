@@ -396,3 +396,80 @@ function gen_eva_app( msgs )
     io.write( '}\n\n' )
 
 end
+
+function gen_eva_lua( msg )
+
+    io.output( msg['eva'] .. '_lua.hpp' )
+
+    io.write( '#pragma once\n\n' )
+    io.write( '#include "eva/event.hpp"\n\n' )
+    io.write( 'extern "C"\n' )
+    io.write( '{\n' )
+    io.write( '#include <lua.h>\n' )
+    io.write( '#include <lauxlib.h>\n' )
+    io.write( '#include <lualib.h>\n' )
+    io.write( '}\n\n' )
+
+    io.write( 'const char* META_' .. string.upper( msg['eva'] ) .. ' = "meta.' .. msg['eva'] .. '";\n\n' )
+
+    for k, v in pairs( _G[msg['eva']] ) do
+    if string.find( v['type'], "^map.*" ) then
+
+    --???
+
+    else
+    io.write( 'int l_call_' .. msg['eva'] .. '_' .. v['name'] .. '( lua_State* l )\n' )
+    io.write( '{\n' )
+    io.write( '    eva::' .. msg['eva'] .. '* ev = *(eva::' .. msg['eva'] .. '**)luaL_checkudata( l, 1, META_' .. string.upper( msg['eva'] ) .. ' );\n' )
+    io.write( '    size_t argc = lua_gettop( l );\n' )
+    io.write( '    if( argc == 1 )\n' )
+    io.write( '    {\n' )
+    if v['type'] == 'string' then
+    io.write( '        lua_pushstring( l, ev->' .. v['name'] .. '().c_str() );\n' )
+    else
+    io.write( '        lua_pushinteger( l, ev->' .. v['name'] .. '() );\n' )
+    end
+    io.write( '        return 1;\n' )
+    io.write( '    }\n' )
+    io.write( '    else\n' )
+    io.write( '    if( argc == 2 )\n' )
+    io.write( '    {\n' )
+    if v['type'] == 'string' then
+    io.write( '        const char* val = luaL_checkstring( l, -1 );\n' )
+    else
+    io.write( '        int val = luaL_checkinteger( l, -1 );\n' )
+    end
+    io.write( '        ev->' .. v['name'] .. '( val );\n' )
+    io.write( '        return 0;\n' )
+    io.write( '    }\n' )
+    io.write( '    return 0;\n' )
+    io.write( '}\n\n' )
+    end
+    end
+
+    io.write( 'void l_register_' .. msg['eva'] .. '( lua_State* l )\n' )
+    io.write( '{\n' )
+    io.write( '    luaL_Reg reg[] =\n' )
+    io.write( '    {\n' )
+    for k, v in pairs( _G[msg['eva']] ) do
+    if string.find( v['type'], "^map.*" ) then
+    else
+    io.write( '        { "' .. v['name'] .. '", l_call_' .. msg['eva'] .. '_' .. v['name'] .. ' },\n' )
+    end
+    end
+    io.write( '        { NULL, NULL }\n' )
+    io.write( '    };\n' )
+    io.write( '    luaL_newmetatable( l, META_' .. string.upper( msg['eva'] ) .. ' );\n' )
+    io.write( '    luaL_setfuncs( l, reg, 0 );\n' )
+    io.write( '    lua_setfield( l, -1, "__index" );\n' )
+    io.write( '}\n\n' )
+
+    io.write( 'int l_push_' .. msg['eva'] .. '( lua_State* l, eva::' .. msg['eva'] .. '& ev )\n' )
+    io.write( '{\n' )
+    io.write( '    eva::' .. msg['eva'] .. '** udata = (eva::' .. msg['eva'] .. '**)lua_newuserdata( l, sizeof( eva::' .. msg['eva'] .. '* ) );\n' )
+    io.write( '    *udata = &ev;\n' )
+    io.write( '    luaL_getmetatable( l, META_' .. string.upper( msg['eva'] ) .. ' );\n' )
+    io.write( '    lua_setmetatable( l, -2 );\n' )
+    io.write( '}\n\n' )
+
+end
