@@ -4,10 +4,6 @@
 #include "eva/order_executed.hpp"
 #include "config.hpp"
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
 namespace xt {
 
 class session
@@ -65,9 +61,8 @@ void session::process( fix::session& sess, const fix::message& msg )
 
 std::string session::id()
 {
-    static boost::uuids::random_generator generator;
-    boost::uuids::uuid u = generator();
-    return to_string( u );
+    static uint64_t id = 6780;
+    return "0000-" + boost::lexical_cast< std::string >( id++ );
 }
 
 void session::submit( const eva::place_order& po )

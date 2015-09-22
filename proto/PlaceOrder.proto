@@ -1,0 +1,13 @@
+syntax = "proto3";
+message PlaceOrder
+{
+    string user = 1;
+    string clordid = 2;
+    string symbol = 3;
+    string side = 4;
+    string ord_type = 5;
+    uint32 quantity = 6;
+    uint32 price = 7;
+    map<uint32,string> appendage = 8;
+}
+

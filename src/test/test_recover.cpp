@@ -1,30 +1,31 @@
 #include "eva/journal.hpp"
-#include <iostream>
 
 int main()
 {
-    eva::journal jnl( "journal", false );
+    eva::journal jnl( "journal.bin", false );
+
     jnl.recover( []( const eva::event& ev )
     {
         eva::event_type type = ev.type();
-        if( ev.type() == eva::event_type::FIX_MESSAGE )
+
+        if( type == eva::event_type::PLACE_ORDER )
         {
-            ev.parse< messages::FIXMessage >( [ & ]( const messages::FIXMessage& msg ) {
-                std::cout << msg.DebugString() << std::endl;
+            ev.parse< eva::place_order >( [ & ]( const eva::place_order& msg ) {
+                std::cout << msg << std::endl;
             } );
         }
         else
-        if( ev.type() == eva::event_type::XT_NEW_ORDER )
+        if( type == eva::event_type::ORDER_EXECUTED )
         {
-            ev.parse< messages::XTNewOrder >( [ & ]( const messages::XTNewOrder& msg ) {
-                std::cout << msg.DebugString() << std::endl;
+            ev.parse< eva::order_executed >( [ & ]( const eva::order_executed& msg ) {
+                std::cout << msg << std::endl;
             } );
         }
         else
-        if( ev.type() == eva::event_type::XT_EXECUTION )
+        if( type == eva::event_type::UPDATE_CACHE )
         {
-            ev.parse< messages::XTExecution >( [ & ]( const messages::XTExecution& msg ) {
-                std::cout << msg.DebugString() << std::endl;
+            ev.parse< eva::update_cache >( [ & ]( const eva::update_cache& msg ) {
+                std::cout << msg << std::endl;
             } );
         }
     } );

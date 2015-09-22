@@ -29,11 +29,17 @@ order_executed = {
     { id=12, name='appendage', type='map<uint32,string>' }
 }
 
+update_cache = {
+    { id=1, name='key', type='string' },
+    { id=2, name='value', type='string' }
+}
+
 header_def = {
     id=0, eva='header', pb='Header'
 }
 
 message_def = {
     { id=1, eva='place_order', pb='PlaceOrder' },
-    { id=2, eva='order_executed', pb='OrderExecuted' }
+    { id=2, eva='order_executed', pb='OrderExecuted' },
+    { id=3, eva='update_cache', pb='UpdateCache' }
 }
