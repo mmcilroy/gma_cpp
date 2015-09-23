@@ -9,3 +9,6 @@ target_link_libraries( test_replicate eva protobuf boost_system pthread )
 
 add_executable( test_lua test_lua.cpp )
 target_link_libraries( test_lua eva protobuf lua5.2 )
+
+add_executable( test_translate_performance test_translate_performance.cpp )
+target_link_libraries( test_translate_performance eva protobuf lua5.2 )

@@ -144,6 +144,27 @@ int l_call_place_order_price( lua_State* l )
     return 0;
 }
 
+int l_call_place_order_appendage( lua_State* l )
+{
+    eva::place_order* ev = *(eva::place_order**)luaL_checkudata( l, 1, META_PLACE_ORDER );
+    size_t argc = lua_gettop( l );
+    if( argc == 2 )
+    {
+        int k = luaL_checkinteger( l, -1 );
+        lua_pushstring( l, ev->appendage( k ).c_str() );
+        return 1;
+    }
+    else
+    if( argc == 3 )
+    {
+        int k = luaL_checkinteger( l, -2 );
+        const char* v = luaL_checkstring( l, -1 );
+        ev->appendage( k, v );
+        return 0;
+    }
+    return 0;
+}
+
 void l_register_place_order( lua_State* l )
 {
     luaL_Reg reg[] =
@@ -155,6 +176,7 @@ void l_register_place_order( lua_State* l )
         { "ord_type", l_call_place_order_ord_type },
         { "quantity", l_call_place_order_quantity },
         { "price", l_call_place_order_price },
+        { "appendage", l_call_place_order_appendage },
         { NULL, NULL }
     };
     luaL_newmetatable( l, META_PLACE_ORDER );

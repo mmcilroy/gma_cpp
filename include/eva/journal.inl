@@ -17,8 +17,6 @@ inline journal::journal( const std::string& filename, bool truncate ) :
 
 inline void journal::write( const eva::event& ev )
 {
-    std::cout << "journal.write " << ev.length() + EVENT_HEADER_SIZE << std::endl;
-
     file_.seekp( 0, std::ios_base::end );
     file_.write( ev.buffer(), ev.length() + EVENT_HEADER_SIZE );
     if( !file_.good() ) {
@@ -59,8 +57,6 @@ inline void journal::recover( F handler )
             if( !file.good() || !file.gcount() == length ) {
                 return; // error
             }
-
-            std::cout << "journal.recover " << length + EVENT_HEADER_SIZE << std::endl;
 
             handler( ev );
         }

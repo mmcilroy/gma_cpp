@@ -220,6 +220,27 @@ int l_call_order_executed_last_price( lua_State* l )
     return 0;
 }
 
+int l_call_order_executed_appendage( lua_State* l )
+{
+    eva::order_executed* ev = *(eva::order_executed**)luaL_checkudata( l, 1, META_ORDER_EXECUTED );
+    size_t argc = lua_gettop( l );
+    if( argc == 2 )
+    {
+        int k = luaL_checkinteger( l, -1 );
+        lua_pushstring( l, ev->appendage( k ).c_str() );
+        return 1;
+    }
+    else
+    if( argc == 3 )
+    {
+        int k = luaL_checkinteger( l, -2 );
+        const char* v = luaL_checkstring( l, -1 );
+        ev->appendage( k, v );
+        return 0;
+    }
+    return 0;
+}
+
 void l_register_order_executed( lua_State* l )
 {
     luaL_Reg reg[] =
@@ -235,6 +256,7 @@ void l_register_order_executed( lua_State* l )
         { "exec_type", l_call_order_executed_exec_type },
         { "last_qty", l_call_order_executed_last_qty },
         { "last_price", l_call_order_executed_last_price },
+        { "appendage", l_call_order_executed_appendage },
         { NULL, NULL }
     };
     luaL_newmetatable( l, META_ORDER_EXECUTED );

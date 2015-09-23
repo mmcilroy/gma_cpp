@@ -414,9 +414,26 @@ function gen_eva_lua( msg )
 
     for k, v in pairs( _G[msg['eva']] ) do
     if string.find( v['type'], "^map.*" ) then
-
-    --???
-
+    io.write( 'int l_call_' .. msg['eva'] .. '_' .. v['name'] .. '( lua_State* l )\n' )
+    io.write( '{\n' )
+    io.write( '    eva::' .. msg['eva'] .. '* ev = *(eva::' .. msg['eva'] .. '**)luaL_checkudata( l, 1, META_' .. string.upper( msg['eva'] ) .. ' );\n' )
+    io.write( '    size_t argc = lua_gettop( l );\n' )
+    io.write( '    if( argc == 2 )\n' )
+    io.write( '    {\n' )
+    io.write( '        int k = luaL_checkinteger( l, -1 );\n' )
+    io.write( '        lua_pushstring( l, ev->' .. v['name'] .. '( k ).c_str() );\n' )
+    io.write( '        return 1;\n' )
+    io.write( '    }\n' )
+    io.write( '    else\n' )
+    io.write( '    if( argc == 3 )\n' )
+    io.write( '    {\n' )
+    io.write( '        int k = luaL_checkinteger( l, -2 );\n' )
+    io.write( '        const char* v = luaL_checkstring( l, -1 );\n' )
+    io.write( '        ev->' .. v['name'] .. '( k, v );\n' )
+    io.write( '        return 0;\n' )
+    io.write( '    }\n' )
+    io.write( '    return 0;\n' )
+    io.write( '}\n\n' )
     else
     io.write( 'int l_call_' .. msg['eva'] .. '_' .. v['name'] .. '( lua_State* l )\n' )
     io.write( '{\n' )
@@ -452,10 +469,7 @@ function gen_eva_lua( msg )
     io.write( '    luaL_Reg reg[] =\n' )
     io.write( '    {\n' )
     for k, v in pairs( _G[msg['eva']] ) do
-    if string.find( v['type'], "^map.*" ) then
-    else
     io.write( '        { "' .. v['name'] .. '", l_call_' .. msg['eva'] .. '_' .. v['name'] .. ' },\n' )
-    end
     end
     io.write( '        { NULL, NULL }\n' )
     io.write( '    };\n' )
