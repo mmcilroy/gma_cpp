@@ -46,8 +46,6 @@ function gen_eva_class( msg )
     end
 
     io.write( '    size_t size() const;\n\n' )
-    io.write( '    void parse( const std::string& );\n\n' )
-    io.write( '    void serialize( std::string& ) const;\n\n')
     io.write( '    void parse( const char*, size_t );\n\n' )
     io.write( '    void serialize( char*, size_t ) const;\n\n')
 
