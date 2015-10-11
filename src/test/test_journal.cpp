@@ -1,20 +1,22 @@
-#include "eva/journal.hpp"
 #include <chrono>
+#include <fstream>
 #include <iostream>
 
-const size_t N = 1024 * 1024;
+const size_t B = 256;
+const size_t N = 10 * 1024 * 1024;
 
 int main()
 {
-    eva::journal j( "journal.bin", true );
-    eva::event e;
+    std::ofstream file( "journal.bin", std::ofstream::binary | std::ofstream::trunc );
 
     auto start = std::chrono::high_resolution_clock::now();
 
+    char buf[ B ];
     for( auto i=1; i<=N; i++ )
     {
-        j.write( e );
-        j.flush();
+        file.seekp( 0, std::ios_base::end );
+        file.write( buf, B );
+        file.flush();
     }
 
     auto millis = std::chrono::duration_cast< std::chrono::milliseconds >(
