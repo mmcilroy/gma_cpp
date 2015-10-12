@@ -18,10 +18,6 @@ public:
 
     size_t size() const;
 
-    void parse( const std::string& );
-
-    void serialize( std::string& ) const;
-
     void parse( const char*, size_t );
 
     void serialize( char*, size_t ) const;

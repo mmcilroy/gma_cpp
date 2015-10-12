@@ -10,12 +10,19 @@ function translate_fix_to_place_order( cache, fix, po )
     po:quantity( fix:get( 38 ) )
     po:price( fix:get( 44 ) )
 
+    -- mapping values
+    if fix:get( 54 ) == '1' then
+        po:appendage( 58, 'this is a buy' )
+    else
+        po:appendage( 58, 'this is a sell' )
+    end
+
     -- extend using configuration data
     po:appendage( 58, cache:get( "config.sys_id" ) )
 
     -- store configurable sticky tags
     for tag in string.gmatch( cache:get( "config.sticky_tags" ), "%d+" ) do
-        cache:set( 'order.sticky.' .. tag .. '.' .. po:clordid(), fix:get( tag ) )
+        cache:set( 'sticky.' .. tag .. '.' .. po:clordid(), fix:get( tag ) )
     end
 end
 

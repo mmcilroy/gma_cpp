@@ -2,7 +2,7 @@ inline replicate_master::replicate_master() :
     socket_( io_ )
 {
     boost::asio::ip::tcp::resolver resolver( io_ );
-    boost::asio::ip::tcp::resolver::query query( boost::asio::ip::tcp::v4(), "localhost", "14101" );
+    boost::asio::ip::tcp::resolver::query query( boost::asio::ip::tcp::v4(), "dev02", "14101" );
     boost::asio::ip::tcp::resolver::iterator it = resolver.resolve( query );
     boost::asio::connect( socket_, it );
 }

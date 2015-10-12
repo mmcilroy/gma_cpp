@@ -8,7 +8,7 @@ else()
     set( VERSION "${VERSION_NUMBER}-debug" )
 endif()
 
-set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -Wl,--no-as-needed -g" )
+set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -Wl,--no-as-needed -O3" )
 
 include_directories( include include/gma include/generated include/generated/eva/pb /usr/include/lua5.2 )
 include_directories( $ENV{HOME}/pubsub_cpp/include )
